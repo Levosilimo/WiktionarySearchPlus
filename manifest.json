@@ -1,33 +1,34 @@
 {
-  "name": "__MSG_name__",
-  "version": "1.3.4",
-  "manifest_version": 2,
-  "description": "__MSG_desc__",
-  "homepage_url": "http://thomas-roberts.co.uk",
+  "name": "Wiktionary Search Plus",
+  "version": "1.3.5",
+  "manifest_version": 3,
+  "description": "Search words or phrases in the wiktionary",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "default_locale": "en",
   "background": {
-    "scripts": [
-      "src/bg/background.js"
-    ],
-    "persistent": true
+    "service_worker": "src/bg/background.js",
+    "type": "module"
   },
-  "browser_action": {
+  "action": {
     "default_icon": "icons/icon19.png",
-    "default_title": "Wiktionary Search",
+    "default_title": "Wiktionary Search Plus",
     "default_popup": "src/browser_action/browser_action.html"
   },
   "options_ui": {
-    "page": "src/opt/options.html",
-    "chrome_style": true
+    "page": "src/opt/options.html"
   },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content_script/content_script.js"]
+    }
+  ],
+  "default_locale": "en",
   "permissions": [
     "contextMenus",
-    "*://*.wiktionary.org/*",
-		"storage"
+    "storage"
   ]
 }

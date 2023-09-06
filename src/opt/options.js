@@ -1,51 +1,49 @@
-// document.title = chrome.i18n.getMessage("opts_title");
-// document.getElementById("title").innerHTML = chrome.i18n.getMessage("opts_title");
 document.getElementById("desc").innerHTML = chrome.i18n.getMessage("opts_desc");
 
 
-var btn = document.getElementsByName('language');
-var wikiurl = 'https://*.wiktionary.org';
+const btn = document.getElementsByName('language');
+const wikiurl = 'https://*.wiktionary.org';
 
-function save() {
-    for (var i = 0; i < btn.length; i++) {
-        if (btn[i].checked) {
-            chrome.storage.sync.set({
-                "language": btn[i].value
-            });
-            var a = document.querySelector("#url a");
-            a.innerHTML = '';
-            a.innerHTML = wikiurl.replace('*', btn[i].value);
-            a.href = wikiurl.replace('*', btn[i].value);
-            break;
+
+const save = () => {
+  for (let i = 0; i < btn.length; i++) {
+    if (btn[i].checked) {
+      chrome.storage.sync.set(
+        {language: btn[i].value},
+        () => {
+          const a = document.querySelector("#url a");
+          a.innerHTML = '';
+          a.innerHTML = wikiurl.replace('*', btn[i].value);
+          a.href = wikiurl.replace('*', btn[i].value);
+          const status = document.getElementById('status');
+          status.textContent = 'Options saved.';
+          setTimeout(() => {
+            status.textContent = '';
+          }, 1250);
         }
+      );
+      break;
     }
-    var status = document.getElementById('status');
-    status.textContent = chrome.i18n.getMessage("saved");
-    setTimeout(function() {
-        status.textContent = '';
-    }, 5000);
-}
+  }
+};
 
-function restore_options() {
-    chrome.storage.sync.get({
-        language: chrome.i18n.getMessage("iso"),
-    }, function(obj) {
-        for (var i = 0; i < btn.length; i++) {
-            if (btn[i].value == obj.language) {
-                btn[i].checked = true;
-                document.querySelector("[for='*']".replace('*', btn[i].value)).scrollIntoView();
-                window.scrollBy(0, -200);
-                var a = document.querySelector("#url a");
-                a.innerHTML = wikiurl.replace('*', obj.language);
-                a.href = wikiurl.replace('*', obj.language);
-            }
+function restoreOptions() {
+  chrome.storage.sync.get("language", function (result) {
+    if (result.language) {
+      for (let i = 0; i < btn.length; i++) {
+        if (btn[i].value === result.language) {
+          btn[i].checked = true;
+          break;
         }
-
-    });
+      }
+      const a = document.querySelector("#url a");
+      a.innerHTML = wikiurl.replace('*', result.language);
+      a.href = wikiurl.replace('*', result.language);
+    }
+  });
 }
 
-document.addEventListener('DOMContentLoaded', restore_options);
-for (var i = 0; i < btn.length; i++) {
-    btn[i].addEventListener('click',
-        save);
+document.addEventListener('DOMContentLoaded', restoreOptions);
+for (let i = 0; i < btn.length; i++) {
+  btn[i].addEventListener('click', save);
 }
